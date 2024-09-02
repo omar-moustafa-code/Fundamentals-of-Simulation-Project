@@ -1,0 +1,53 @@
+---
+title: "Demonstrating the Coverage of a (1 – a)100% Confidence Interval For a Given Parameter"
+author: "Nour Kahky 900221042 & Omar Moustafa 900222400"
+date: "2024-05-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. <http://rmarkdown.rstudio.com>.
+
+```{r}
+sample_generation = function(n) {
+  return(rnorm(n, mean = 0, sd = 1))
+}
+
+CI_calculation = function(sample_data, alpha) {
+  n = length(sample_data)
+  sample_mean = mean(sample_data)
+  sample_sd = sd(sample_data)
+  z = qnorm(1 - alpha/2)
+  margin_of_error = z * (sample_sd / sqrt(n))
+  lower_bound = sample_mean - margin_of_error
+  upper_bound = sample_mean + margin_of_error
+  return(list(lower_bound = lower_bound, upper_bound = upper_bound))
+}
+
+check_coverage <- function(confidence_interval, true_parameter) {
+  return(true_parameter >= confidence_interval$lower_bound && true_parameter <= confidence_interval$upper_bound)
+}
+
+number_of_simulations = 1000  
+sample_size = 100      
+confidence_level = 0.95  
+
+true_mean = 0
+
+coverage_count = 0
+for (i in 1:number_of_simulations) {
+  sample_data = sample_generation(sample_size)
+  
+  ci = CI_calculation(sample_data, 1 - confidence_level)
+  
+  if (check_coverage(ci, true_mean)) {
+    coverage_count = coverage_count + 1
+  }
+}
+
+coverage_probability = coverage_count / number_of_simulations
+cat("Coverage Probability:", coverage_probability)
+```
